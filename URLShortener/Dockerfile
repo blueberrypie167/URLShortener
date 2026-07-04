@@ -12,8 +12,8 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:10.0-alpine AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["URLShortener/URLShortener.csproj", "URLShortener/"]
-RUN dotnet restore "./URLShortener/URLShortener.csproj"
+COPY ["URLShortener.csproj", "./"]
+RUN dotnet restore "./URLShortener.csproj"
 COPY . .
 WORKDIR "/src/URLShortener"
 RUN dotnet build "./URLShortener.csproj" -c $BUILD_CONFIGURATION -o /app/build

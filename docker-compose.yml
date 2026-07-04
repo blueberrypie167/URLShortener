@@ -1,33 +1,6 @@
-version: '3.8'
-
 services:
-  web:
-    image: urlshortener-web
+  urlshortener:
+    image: ${DOCKER_REGISTRY-}urlshortener
     build:
-      context: ./URLShortener
-      dockerfile: Dockerfile
-    ports:
-      - "8080:8080"
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_HTTP_PORTS=8080
-      # Overrides the connection string in appsettings.json to point to the db container
-      - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=UrlShortenerDb;Username=postgres;Password=YourSecurePassword123!
-    depends_on:
-      - db
-
-  db:
-    image: postgres:16-alpine
-    container_name: urlshortener_postgres
-    restart: always
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: YourSecurePassword123!
-      POSTGRES_DB: UrlShortenerDb
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-
-volumes:
-  postgres_data:
+      context: .
+      dockerfile: URLShortener/Dockerfile
