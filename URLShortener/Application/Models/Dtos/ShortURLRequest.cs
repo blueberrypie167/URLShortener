@@ -7,7 +7,8 @@ namespace URLShortener.Application.Models.Dtos
         [Required]
         public string Url { get; set; } = string.Empty;
 
-        public DateTime? LifeTime { get; set; } = DateTime.UtcNow.AddDays(30);
+        // Accept string representation from the dropdown
+        public string? LifetimeString { get; set; }
 
         [StringLength(20, MinimumLength = 3)]
         [RegularExpression(@"^(?=.*[^a-zA-Z0-9]).+$", ErrorMessage = "The input must contain at least one special character.")]

@@ -20,6 +20,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+builder.Services.AddRazorPages();
 
 // services
 builder.Services.AddTransient<IHelperMethods, HelperMethods>();
@@ -47,6 +48,10 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// Enable serving index.html and static files from wwwroot
+app.UseDefaultFiles();
+app.UseStaticFiles();
 
 //app.UseAuthorization();
 

@@ -1,0 +1,58 @@
+﻿<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Quick Dashboard</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" />
+    <script src="https://unpkg.com/htmx.org@2.0.4"></script>
+</head>
+<body class="container" style="padding-top: 3rem; max-width: 680px;">
+    <main>
+        <article>
+            <hgroup>
+                <h2>Tominem's —  URL Shortening Service</h2>
+                <p>Fill out the details below.</p>
+            </hgroup>
+
+            <!-- 1. Updated hx-post route to match Controller -->
+            <form hx-post="/Shorten/" hx-target="#result" hx-swap="innerHTML">
+                <div class="grid">
+                    <label>
+                        Enter URL to shorten:
+                        <!-- 2. Matched name attribute to DTO ("Url" instead of "LongURL") -->
+                        <input type="text" name="Url" placeholder="https://example.com" required />
+                    </label>
+                </div>
+
+                <div class="grid">
+                    <label>
+                        URL Lifetime 
+                        <!-- 3. Renamed to match the new DTO property -->
+                        <select name="LifetimeString" required>
+                            <option value="" disabled selected>Select Lifetime...</option>
+                            <option value="1hr">1 Hour</option>
+                            <option value="7hr">7 Hours</option>
+                            <option value="24hr">24 Hours</option>
+                            <option value="7d">7 Days</option>
+                            <option value="30d">30 Days</option>
+                            <option value="Never">Never</option>
+                        </select>
+                    </label>
+                </div>
+
+                <div class="grid">
+                    <label>
+                        Custom Alias (must contain a special character)
+                        <input type="text" name="CustomAlias" placeholder="embrace-the-chud-life" />
+                    </label>
+                </div>
+
+                <button type="submit" style="margin-top: 1rem;">Generate Url</button>
+            </form>
+
+            <div id="result" style="margin-top: 1rem; font-weight: bold; text-align: center;"></div>
+        </article>
+    </main>
+</body>
+</html>

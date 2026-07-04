@@ -26,18 +26,34 @@ namespace URLShortener.API.Controllers
         }
 
         [HttpPost("Shorten/")]
-        public async Task<IActionResult> ShortenUrl(ShortURLRequest request)
+        // Added [FromForm] to parse form data sent by HTMX
+        public async Task<IActionResult> ShortenUrl([FromForm] ShortURLRequest request) 
         {
             if (!_helper.IsValidUrl(request.Url))
             {
-                return BadRequest("Specified URL is invalid.");
+                return BadRequest("<div style='color:red;'>Specified URL is invalid.</div>");
             }
 
-            var Code = await _urlShorteningService.GenerateCode(request.Url, request.LifeTime, request.CustomAlias);
+            // Convert string lifecycle value to a proper expiration date
+            DateTime? lifeTimeDate = request.LifetimeString switch
+            {
+                "1hr" => DateTime.UtcNow.AddHours(1),
+                "7hr" => DateTime.UtcNow.AddHours(7),
+                "24hr" => DateTime.UtcNow.AddHours(24),
+                "7d" => DateTime.UtcNow.AddDays(7),
+                "30d" => DateTime.UtcNow.AddDays(30),
+                "Never" => null,
+                _ => DateTime.UtcNow.AddDays(30) // Default fallback
+            };
 
-            var shortUrl = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/{Code}";
+            var code = await _urlShorteningService.GenerateCode(request.Url, lifeTimeDate, request.CustomAlias);
 
-            return Ok(shortUrl);
+            var shortUrl = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/{code}";
+
+            // Return html anchor tag for HTMX to elegantly insert
+            string htmlResponse = $"Success! Your shortened URL is: <a href='{shortUrl}' target='_blank'>{shortUrl}</a>";
+
+            return Content(htmlResponse, "text/html");
         }
 
         [HttpGet("/{code}")]
