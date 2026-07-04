@@ -1,0 +1,15 @@
+FROM mcr.microsoft.com/dotnet/sdk:10.0-alpine AS build
+WORKDIR /src
+COPY ["URLShortener/URLShortener.csproj", "URLShortener/"]
+RUN dotnet restore "./URLShortener/URLShortener.csproj"
+COPY . .
+WORKDIR "/src/URLShortener"
+RUN dotnet publish -c Release -o /app/publish /p:UseAppHost=false
+
+FROM mcr.microsoft.com/dotnet/aspnet:10.0-alpine
+WORKDIR /app
+COPY --from=build /app/publish .
+ENV ASPNETCORE_ENVIRONMENT=Production
+ENV ASPNETCORE_URLS=http://0.0.0.0:7173
+EXPOSE 7173
+ENTRYPOINT ["dotnet", "URLShortener.dll"]

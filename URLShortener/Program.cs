@@ -40,14 +40,14 @@ builder.Services.AddMemoryCache();
 
 var app = builder.Build();
 
-
-
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
     app.MapScalarApiReference();
 }
+
+app.UseHttpsRedirection();
 
 // Enable serving index.html and static files from wwwroot
 app.UseDefaultFiles();
@@ -56,7 +56,5 @@ app.UseStaticFiles();
 //app.UseAuthorization();
 
 app.MapControllers();
-
-app.MapRazorPages();
 
 app.Run();
