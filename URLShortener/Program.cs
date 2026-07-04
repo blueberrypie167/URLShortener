@@ -26,7 +26,7 @@ builder.Services.AddRazorPages();
 builder.Services.AddTransient<IHelperMethods, HelperMethods>();
 builder.Services.AddTransient<IUrlShorteningService, UrlShorteningService>();
 builder.Services.AddDbContext<ApplicationDbContext>(
-    options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options => options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddSingleton<SqidsEncoder<long>>();
 builder.Services.AddMemoryCache();
 //builder.Services.AddAuthentication(NegotiateDefaults.AuthenticationScheme)
@@ -39,6 +39,8 @@ builder.Services.AddMemoryCache();
 //});
 
 var app = builder.Build();
+
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -56,5 +58,7 @@ app.UseStaticFiles();
 //app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapRazorPages();
 
 app.Run();
