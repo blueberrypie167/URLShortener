@@ -49,8 +49,6 @@ if (app.Environment.IsDevelopment())
     app.MapScalarApiReference();
 }
 
-app.UseHttpsRedirection();
-
 // Enable serving index.html and static files from wwwroot
 app.UseDefaultFiles();
 app.UseStaticFiles();

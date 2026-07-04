@@ -5,7 +5,7 @@ FROM mcr.microsoft.com/dotnet/aspnet:10.0-alpine AS base
 USER $APP_UID
 WORKDIR /app
 EXPOSE 8080
-EXPOSE 8081
+# EXPOSE 8081 (Remove or comment out)
 EXPOSE 7173
 
 # This stage is used to build the service project
@@ -26,6 +26,6 @@ RUN dotnet publish "./URLShortener.csproj" -c $BUILD_CONFIGURATION -o /app/publi
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENV ASPNETCORE_HTTP_PORTS=7173
-ENV ASPNETCORE_HTTPS_PORTS=8081
+ENV ASPNETCORE_HTTP_PORTS=8080
+# ENV ASPNETCORE_HTTPS_PORTS=8081 (Removing this prevents Kestrel from needing a certificate)
 ENTRYPOINT ["dotnet", "URLShortener.dll"]
