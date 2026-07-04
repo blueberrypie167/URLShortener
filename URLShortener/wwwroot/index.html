@@ -3,56 +3,98 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Quick Dashboard</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" />
+    <title>Tominem's URLShortener</title>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.2/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/htmx.org@2.0.4"></script>
 </head>
-<body class="container" style="padding-top: 3rem; max-width: 680px;">
-    <main>
-        <article>
-            <hgroup>
-                <h2>Tominem's —  URL Shortening Service</h2>
-                <p>Fill out the details below.</p>
-            </hgroup>
+<body class="bg-slate-900 min-h-screen text-slate-200 flex justify-center pt-12 px-4 selection:bg-primary selection:text-primary-content">
 
-            <!-- 1. Updated hx-post route to match Controller -->
-            <form hx-post="/Shorten/" hx-target="#result" hx-swap="innerHTML">
-                <div class="grid">
-                    <label>
-                        Enter URL to shorten:
-                        <!-- 2. Matched name attribute to DTO ("Url" instead of "LongURL") -->
-                        <input type="text" name="Url" placeholder="https://example.com" required />
-                    </label>
+    <main class="w-full max-w-2xl">
+        <div class="card bg-slate-800 shadow-2xl border border-slate-700">
+            <div class="card-body">
+
+                <div class="mb-6">
+                    <h2 class="card-title text-2xl font-bold text-slate-100 mb-1">Tominem's — URL Shortening Service</h2>
+                    <p class="text-slate-400 text-sm">Fill out the details below.</p>
                 </div>
 
-                <div class="grid">
-                    <label>
-                        URL Lifetime 
-                        <!-- 3. Renamed to match the new DTO property -->
-                        <select name="LifetimeString" required>
-                            <option value="" disabled selected>Select Lifetime...</option>
-                            <option value="1hr">1 Hour</option>
-                            <option value="7hr">7 Hours</option>
-                            <option value="24hr">24 Hours</option>
-                            <option value="7d">7 Days</option>
-                            <option value="30d">30 Days</option>
-                            <option value="Never">Never</option>
-                        </select>
-                    </label>
-                </div>
+                <form hx-post="/Shorten/"
+                      hx-target="#result"
+                      hx-swap="innerHTML"
+                      class="space-y-4"
+                      id="shortenForm"
+                      hx-on:htmx:validation:validate="
+                        const errorDiv = document.getElementById('error-message');
+                        errorDiv.classList.add('hidden');
 
-                <div class="grid">
-                    <label>
-                        Custom Alias (must contain a special character)
-                        <input type="text" name="CustomAlias" placeholder="embrace-the-chud-life" />
-                    </label>
-                </div>
+                        // 1. Check if URL is empty
+                        if (!this.elements.Url.value.trim()) {
+                            errorDiv.innerText = '❌ URL field cannot be empty!';
+                            errorDiv.classList.remove('hidden');
+                            event.preventDefault();
+                            return;
+                        }
 
-                <button type="submit" style="margin-top: 1rem;">Generate Url</button>
-            </form>
+                        // 2. Check if Custom Alias contains a special character (if they filled it out)
+                        const alias = this.elements.CustomAlias.value;
+                        const specialCharRegex = /[^a-zA-Z0-9\s]/;
+                        if (alias && !specialCharRegex.test(alias)) {
+                            errorDiv.innerText = '❌ Custom Alias must contain at least one special character!';
+                            errorDiv.classList.remove('hidden');
+                            event.preventDefault();
+                            return;
+                        }
+                      ">
 
-            <div id="result" style="margin-top: 1rem; font-weight: bold; text-align: center;"></div>
-        </article>
+                    <div class="form-control w-full">
+                        <label class="label">
+                            <span class="label-text text-slate-300 font-medium">Enter URL to shorten:</span>
+                        </label>
+                        <input type="text" name="Url" placeholder="https://example.com" required
+                               class="input input-bordered w-full bg-slate-700 border-slate-600 text-slate-100 placeholder-slate-400 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
+                    </div>
+
+                    <div class="flex flex-col md:flex-row gap-4 w-full">
+                        <div class="form-control w-full md:w-1/2">
+                            <label class="label min-h-[3rem] items-end pb-1">
+                                <span class="label-text text-slate-300 font-medium">URL Lifetime</span>
+                            </label>
+                            <select name="LifetimeString" required
+                                    class="select select-bordered w-full bg-slate-700 border-slate-600 text-slate-100 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary">
+                                <option value="" disabled selected>Select Lifetime...</option>
+                                <option value="1hr">1 Hour</option>
+                                <option value="7hr">7 Hours</option>
+                                <option value="24hr">24 Hours</option>
+                                <option value="7d">7 Days</option>
+                                <option value="30d">30 Days</option>
+                                <option value="Never">Never</option>
+                            </select>
+                        </div>
+
+                        <div class="form-control w-full md:w-1/2">
+                            <label class="label min-h-[3rem] items-end pb-1">
+                                <span class="label-text text-slate-300 font-medium">Custom Alias</span>
+                            </label>
+                            <input type="text" name="CustomAlias" placeholder="embrace-the-chud-life"
+                                   class="input input-bordered w-full bg-slate-700 border-slate-600 text-slate-100 placeholder-slate-400 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
+                        </div>
+                    </div>
+
+                    <div id="error-message" class="hidden text-sm font-semibold text-error bg-error/10 border border-error/20 rounded-lg p-3 text-center mt-4">
+                    </div>
+
+                    <div class="form-control w-full mt-6">
+                        <button type="submit" class="btn btn-primary w-full text-lg font-bold text-white shadow-lg h-12">
+                            Generate Url
+                        </button>
+                    </div>
+                </form>
+
+                <div id="result" class="mt-6 text-xl font-semibold text-center text-slate-100 min-h-[2rem]"></div>
+
+            </div>
+        </div>
     </main>
 </body>
 </html>
